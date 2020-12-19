@@ -16,10 +16,11 @@ namespace WebApiPSCourse.Data
                                                                                      .ReverseMap();  // .ForAllOtherMembers(x => x.Ignore());
 
             // Get Talk
-            this.CreateMap<Talk, TalkModel>().ReverseMap();
-            // .ForMember(a => a.Title, b => b.MapFrom(c => c.Title));
-            // this.CreateMap<TalkModel, Talk>();
-            // .IncludeMembers(t => t.Speaker);
+            this.CreateMap<Talk, TalkModel>().ReverseMap()
+                .ForMember(a => a.Camp, b => b.Ignore()) // From Talkmodel to talk, ignore camp
+                .ForMember(a => a.Speaker, b => b.Ignore()); // From Talkmodel to talk, ignore speaker
+                                                             // this.CreateMap<TalkModel, Talk>();
+                                                             // .IncludeMembers(t => t.Speaker);
 
             // Get Speaker
             this.CreateMap<Speaker, SpeakerModel>().ReverseMap();

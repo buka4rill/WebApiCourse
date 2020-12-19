@@ -53,6 +53,9 @@ namespace WebApiPSCourse.Controllers
                 // We are getting talks by moniker and id fpr individual talk
                 var talk = await _repository.GetTalkByMonikerAsync(moniker, id, true);
 
+                // Check if talk is present
+                if (talk == null) return NotFound("Talk not Found!");
+
                 return _mapper.Map<TalkModel>(talk);
             }
             catch (Exception e)
@@ -102,6 +105,82 @@ namespace WebApiPSCourse.Controllers
             {
                 // Database failure
                 return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure, \n {e.Message}");
+            }
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<TalkModel>> Put(string moniker, int id, TalkModel model)
+        {
+            // This includes id for the individual talk
+
+            try
+            {
+                // Get Talk
+                var talk = await _repository.GetTalkByMonikerAsync(moniker, id, true);
+                if (talk == null) return NotFound("Couldn't find the talk");
+
+                // Map changes from TalkModel into Talk
+                _mapper.Map(model, talk);
+
+                // It would map anything from the model into the talk
+                // This includes the camp and the speaker
+                // To fix, check profile
+
+                // If the model sends the speaker, change it
+                if (model.Speaker != null)
+                {
+                    var speaker = await _repository.GetSpeakerAsync(model.Speaker.SpeakerId);
+                    if (speaker != null)
+                    {
+                        // Set talk speaker obj
+                        talk.Speaker = speaker;
+                    }
+                }
+
+                // Save changes
+                if (await _repository.SaveChangesAsync())
+                {
+                    return _mapper.Map<TalkModel>(talk);
+                }
+                else
+                {
+                    return BadRequest("Failed to update database!");
+                }
+            }
+            catch (Exception e)
+            {
+                // Database failure
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Database Failure, \n {e.Message}");
+            }
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(string moniker, int id)
+        {
+            try
+            {
+
+                var talk = await _repository.GetTalkByMonikerAsync(moniker, id);
+
+                if (talk == null) return NotFound("Faild to find the talk to delete");
+
+                // Delete talk
+                _repository.Delete(talk); // works because talk is a db type
+
+                // Save changes
+                if (await _repository.SaveChangesAsync())
+                {
+                    return Ok("Talk Deleted!");
+                }
+                else
+                {
+                    return BadRequest("Failed to delete talk");
+                }
+            }
+            catch (System.Exception)
+            {
+
+                throw;
             }
         }
     }
