@@ -33,7 +33,7 @@ namespace WebApiPSCourse.Controllers
         {
             try
             {
-                var talks = await _repository.GetTalksByMonikerAsync(moniker); // We are getting talks by moniker
+                var talks = await _repository.GetTalksByMonikerAsync(moniker, true); // We are getting talks by moniker
 
                 return _mapper.Map<TalkModel[]>(talks);
             }
@@ -51,7 +51,7 @@ namespace WebApiPSCourse.Controllers
             try
             {
                 // We are getting talks by moniker and id fpr individual talk
-                var talk = await _repository.GetTalkByMonikerAsync(moniker, id);
+                var talk = await _repository.GetTalkByMonikerAsync(moniker, id, true);
 
                 return _mapper.Map<TalkModel>(talk);
             }
@@ -79,7 +79,7 @@ namespace WebApiPSCourse.Controllers
 
                 // Account for speaker of Talk
                 if (model.Speaker == null) return BadRequest("Speaker ID is required"); // Don't add talk if Speaker is unknown
-                var speaker = await _repository.GetSpeakerAsync(model.Speaker.SpeakerId);
+                var speaker = await _repository.GetSpeakerAsync(model.Speaker.SpeakerId); // Getting speaker from the talk model
                 if (speaker == null) return BadRequest("Speaker could not be found"); // Bad informationg given
                 // If OK
                 talk.Speaker = speaker;
