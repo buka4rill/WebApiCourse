@@ -90,7 +90,6 @@ namespace WebApiPSCourse.Controllers
                 {
                     // URl binding to the individual talk to send a location
                     var url = _linkGenerator.GetPathByAction(HttpContext, "Get", values: new { moniker, id = talk.TalkId });
-                    // var url = _linkGenerator.GetPathByAction(HttpContext, "Get", "Talk", values: new { moniker, id = talk.TalkId });
 
                     return Created(url, _mapper.Map<TalkModel>(talk));
                 }
