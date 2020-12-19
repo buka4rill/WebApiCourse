@@ -74,7 +74,7 @@ namespace WebApiPSCourse.Controllers
                 if (camp == null) return BadRequest("Camp does not exist!");
 
                 // Camp exists...map to Talk
-                var talk = _mapper.Map<Talk>(camp);
+                var talk = _mapper.Map<Talk>(model); // map to the talk from the model
                 talk.Camp = camp; // set object to camp
 
                 // Account for speaker of Talk
@@ -90,6 +90,7 @@ namespace WebApiPSCourse.Controllers
                 {
                     // URl binding to the individual talk to send a location
                     var url = _linkGenerator.GetPathByAction(HttpContext, "Get", values: new { moniker, id = talk.TalkId });
+                    // var url = _linkGenerator.GetPathByAction(HttpContext, "Get", "Talk", values: new { moniker, id = talk.TalkId });
 
                     return Created(url, _mapper.Map<TalkModel>(talk));
                 }

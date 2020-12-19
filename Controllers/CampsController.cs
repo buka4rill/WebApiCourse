@@ -104,7 +104,6 @@ namespace WebApiPSCourse.Controllers
 
 
         // Create a new Camp(POST)
-        [HttpPost]
         public async Task<ActionResult<CampModel>> Post(CampModel model)
         {
             try
