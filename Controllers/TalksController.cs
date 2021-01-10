@@ -13,14 +13,14 @@ namespace WebApiPSCourse.Controllers
 
     [Route("api/camps/{moniker}/talks")] // This is an associaton controller
     [ApiController]
-    public class TalkController : ControllerBase
+    public class TalksController : ControllerBase
     {
         private readonly ICampRepository _repository;
         private readonly IMapper _mapper;
         private readonly LinkGenerator _linkGenerator;
 
-        // Controller
-        public TalkController(ICampRepository repository, IMapper mapper, LinkGenerator linkGenerator)
+        // Constructor
+        public TalksController(ICampRepository repository, IMapper mapper, LinkGenerator linkGenerator)
         {
             _repository = repository;
             _mapper = mapper;

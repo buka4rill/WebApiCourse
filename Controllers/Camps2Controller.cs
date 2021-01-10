@@ -13,19 +13,18 @@ using Microsoft.AspNetCore.Routing;
 
 namespace WebApiPSCourse.Controllers
 {
-    [Route("api/[controller]")]
-    [Route("api/v{version:apiVersion}/[controller]")] // URL versioning Controller
-    [ApiVersion("1.0")] // support 1.0
-    [ApiVersion("1.1")] // support 1.1
+    [Route("api/camps")]
+    [Route("api/v{version:apiVersion}/camps")] // URL versioning
+    [ApiVersion("2.0")] // support 2.0
     [ApiController]
-    public class CampsController : ControllerBase
+    public class Camps2Controller : ControllerBase
     {
         private readonly ICampRepository _repository;
         private readonly IMapper _mapper;
         private readonly ILogger<CampRepository> _logger;
         private readonly LinkGenerator _linkGenerator;
 
-        public CampsController(ICampRepository repository, IMapper mapper, ILogger<CampRepository> logger, LinkGenerator linkGenerator)
+        public Camps2Controller(ICampRepository repository, IMapper mapper, ILogger<CampRepository> logger, LinkGenerator linkGenerator)
         {
             _mapper = mapper;
             _logger = logger;
@@ -36,20 +35,22 @@ namespace WebApiPSCourse.Controllers
 
         // Get All Camps Array
         [HttpGet]
-        public async Task<ActionResult<CampModel[]>> Get(bool includeTalks = false)
+        public async Task<IActionResult> Get(bool includeTalks = false)
         {
             try
             {
                 var results = await _repository.GetAllCampsAsync(includeTalks);
 
-                // CampModel[] models = _mapper.Map<CampModel[]>(results); // Create or map a CampModel Array from results
+                // for version 2.0
+                // we return an annonymous type
+                var result = new
+                {
+                    Count = results.Count(),
+                    Results = _mapper.Map<CampModel[]>(results)
+                };
 
-                // return Ok(results);
-                // return Ok(models);
 
-                // Since ActionResult returns a type that matches models, it returns Ok for us
-                // return models;
-                return _mapper.Map<CampModel[]>(results);
+                return Ok(result);
             }
             catch (Exception e)
             {
@@ -66,35 +67,11 @@ namespace WebApiPSCourse.Controllers
         // Get a single Camp
         // API Version 1.0
         [HttpGet("{moniker}")]
-        [MapToApiVersion("1.0")] // Versioning Actions
         public async Task<ActionResult<CampModel>> Get(string moniker)
         {
             try
             {
                 var result = await _repository.GetCampAsync(moniker);
-
-                // If result is null return 404
-                if (result == null) return NotFound("Camp not Found");
-
-                return _mapper.Map<CampModel>(result);
-
-            }
-            catch (Exception)
-            {
-                // Database error
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Database Failure");
-            }
-        }
-
-        // Get a single Camp
-        // API Version 1.1
-        [HttpGet("{moniker}")]
-        [MapToApiVersion("1.1")]
-        public async Task<ActionResult<CampModel>> Get11(string moniker)
-        {
-            try
-            {
-                var result = await _repository.GetCampAsync(moniker, true); // Return all the talk data
 
                 // If result is null return 404
                 if (result == null) return NotFound("Camp not Found");
